@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -27,32 +26,35 @@ export default new Vuex.Store({
       state.list.push(obj)
       state.nextId++
       state.inputValue = ''
+      window.localStorage.setItem('listdata', JSON.stringify(state))
     },
     removeItem (state, id) {
       const i = state.list.findIndex(x => x.id === id)
       if (i !== -1) {
         state.list.splice(i, 1)
       }
+      window.localStorage.setItem('listdata', JSON.stringify(state))
     },
     changeStatus (state, param) {
       const i = state.list.findIndex(x => x.id === param.id)
       if (i !== -1) {
         state.list[i].done = param.status
       }
+      window.localStorage.setItem('listdata', JSON.stringify(state))
     },
     cleanDone (state) {
       state.list = state.list.filter(x => x.done === false)
+      window.localStorage.setItem('listdata', JSON.stringify(state))
     },
     changeViewKey (state, str) {
       state.viewKey = str
+      window.localStorage.setItem('listdata', JSON.stringify(state))
     }
   },
   actions: {
     getList (context) {
-      axios.get('/list.json').then(({ data }) => {
-        console.log(data)
-        context.commit('initList', data)
-      })
+      const data = JSON.parse(window.localStorage.getItem('listdata')).list || []
+      context.commit('initList', data)
     }
   },
   getters: {
